@@ -7,6 +7,7 @@ import org.apache.spark.SparkContext._
 import org.apache.spark.SparkConf
 import similarity.Shingling
 
+
 object Main {
 
   def main(args: Array[String]): Unit = {
@@ -17,9 +18,15 @@ object Main {
       .setMaster(("local"))
     val sc = new SparkContext(conf)
     val logData = sc.wholeTextFiles(logFile).cache()
-    logData.zipWithIndex.foreach(println)
-    //val shingles = Shingling.shingleDocument(logData)
-    //shingles foreach println
+    val postPattern = "<post>(?s).*</post>".r
+    val posts = logData.map({
+
+      case (path, file) => {
+        postPattern findFirstIn file get
+      }
+    })
+    val shingles = Shingling.shingleDocument(posts)
+    shingles foreach println
   }
 
 }
