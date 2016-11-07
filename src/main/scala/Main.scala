@@ -5,19 +5,21 @@
 import org.apache.spark.SparkContext
 import org.apache.spark.SparkContext._
 import org.apache.spark.SparkConf
+import similarity.Shingling
 
 object Main {
 
-  def main(args: Array[String]) = {
-    val logFile = "./README.MD" // Should be some file on your system
+  def main(args: Array[String]): Unit = {
+    val logFile = "./documents" // Should be some file on your system
+    System.setProperty("hadoop.home.dir", "C:\\Users\\Jacob\\Programmering\\lib\\hadoop-2.7.1")
     val conf = new SparkConf()
       .setAppName("Simple Application")
       .setMaster(("local"))
     val sc = new SparkContext(conf)
-    val logData = sc.textFile(logFile, 2).cache()
-    val numAs = logData.filter(line => line.contains("a")).count()
-    val numBs = logData.filter(line => line.contains("b")).count()
-    println("Lines with a: %s, Lines with b: %s".format(numAs, numBs))
+    val logData = sc.wholeTextFiles(logFile).cache()
+    logData.zipWithIndex.foreach(println)
+    //val shingles = Shingling.shingleDocument(logData)
+    //shingles foreach println
   }
 
 }
