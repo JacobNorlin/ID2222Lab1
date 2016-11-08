@@ -7,7 +7,8 @@ import utils._
   */
 object Shingling extends Pipeline[RDD[String], RDD[Set[Int]]]{
   def run(ctx: Context)(posts: RDD[String]): RDD[Set[Int]]={
-    val hashes: RDD[Set[Int]] = posts.map(post => shingleSet(post, ctx.shingleSize))
+    val shingleSize = ctx.shingleSize
+    val hashes: RDD[Set[Int]] = posts.map(post => shingleSet(post, shingleSize))
     hashes
   }
 
