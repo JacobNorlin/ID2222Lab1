@@ -1,20 +1,24 @@
 package similarity
 
 import org.apache.spark.rdd.RDD
-
+import utils._
 /**
   * Created by Jacob on 07-Nov-16.
   */
-object Shingling {//extends Pipeline[RDD[String], RDD[IndexedSeq[String]]]{
-
-  def run(): Unit ={
-
+object Shingling extends Pipeline[RDD[String], RDD[Set[Int]]]{
+  def run(ctx: Context)(posts: RDD[String]): RDD[Set[Int]]={
+    val hashes: RDD[Set[Int]] = posts.map(post => shingleSet(post, ctx.shingleSize))
+    hashes
   }
 
 
-  def shingleDocument(document: RDD[String]): RDD[Set[Int]] = {
-    document map(text => shingleSet(text, 3))
-  }
+//  def shingleDocument(document: RDD[String]): RDD[Set[Int]] = {
+//    //Compute every shingle hash
+////    val shingles = document.map(text => shingleSet(text, 9))
+////    val allShingles = shingles.reduce(_ union _)
+//
+//  }
+
 
   /**
     * Converts a string to a set of shingles of length k

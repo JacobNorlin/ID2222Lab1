@@ -1,3 +1,5 @@
+package similarity
+
 /**
   * Created by Jacob on 07-Nov-16.
   */
@@ -6,7 +8,7 @@ import org.apache.spark.SparkContext
 import org.apache.spark.SparkContext._
 import org.apache.spark.SparkConf
 import similarity.Shingling
-
+import utils._
 
 object Main {
 
@@ -17,16 +19,11 @@ object Main {
       .setAppName("Simple Application")
       .setMaster(("local"))
     val sc = new SparkContext(conf)
-    val logData = sc.wholeTextFiles(logFile).cache()
-    val postPattern = "<post>(?s).*</post>".r
-    val posts = logData.map({
+    val ctx = new Context(sc, 9)
 
-      case (path, file) => {
-        postPattern findFirstIn file get
-      }
-    })
-    val shingles = Shingling.shingleDocument(posts)
-    shingles foreach println
+    val pipeline = DataReader andThen Shingling
+    pipeline.run(ctx)(logFile) foreach println
+
   }
 
 }
