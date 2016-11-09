@@ -26,7 +26,7 @@ object MinHashing extends Pipeline[(RDD[Set[Int]], Map[Int, Int]), RDD[List[Int]
   }
 
   def run(ctx: Context)(t: (RDD[Set[Int]], Map[Int, Int])) = {
-    val hashFunctions: List[(Int => Int)] = genHashFunctions(25)
+    val hashFunctions: List[(Int => Int)] = genHashFunctions(99)
     val shinglesSignatures = t._1
     val shingleMap = t._2
     shinglesSignatures map (s => minHash(s, shingleMap, hashFunctions))

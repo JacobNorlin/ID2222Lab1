@@ -21,7 +21,7 @@ object Main {
     val sc = new SparkContext(conf)
     val ctx = new Context(sc, 9)
 
-    val pipeline = DataReader andThen Shingling andThen MinHashing
+    val pipeline = DataReader andThen Shingling andThen MinHashing andThen CompareSignatures
     pipeline.run(ctx)(logFile) foreach println
 
   }
