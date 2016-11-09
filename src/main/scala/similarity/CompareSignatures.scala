@@ -5,10 +5,6 @@ package similarity
   */
 object CompareSignatures {
 
-  def jaccardSimilarity(a: Set[Int], b: Set[Int]) = {
-    val intersection = a intersect b
-    val union = a union b
-    intersection.size / union.size
-  }
+
 
 }

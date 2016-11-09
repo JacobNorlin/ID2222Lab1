@@ -5,19 +5,33 @@ import utils._
 /**
   * Created by Jacob on 07-Nov-16.
   */
-object Shingling extends Pipeline[RDD[String], RDD[Set[Int]]]{
-  def run(ctx: Context)(posts: RDD[String]): RDD[Set[Int]]={
+object Shingling extends Pipeline[RDD[String], RDD[Set[Long]]]{
+  /**
+    * Takes an RDD of that that contains every document as as a string.
+    * Converts every document to a set of hashed shingles.
+    * @param ctx
+    * @param posts
+    * @return
+    */
+  def run(ctx: Context)(posts: RDD[String]): RDD[Set[Long]]={
     val shingleSize = ctx.shingleSize
-    val hashes: RDD[Set[Int]] = posts.map(post => shingleSet(post, shingleSize))
+    val hashes: RDD[Set[Long]] = posts.map(post => shingleSet(post, shingleSize))
     hashes
   }
 
-
-//  def shingleDocument(document: RDD[String]): RDD[Set[Int]] = {
-//    //Compute every shingle hash
-////    val shingles = document.map(text => shingleSet(text, 9))
-////    val allShingles = shingles.reduce(_ union _)
 //
+//  def shingleDocument(documents: RDD[String]): RDD[Set[Long]] = {
+//    //Compute every shingle hash
+//    val shingles = documents.map(text => shingleSet(text, 9))
+//    val allShingles = shingles.reduce(_ union _).flatten
+//
+//    val cMatrix = shingles.map(shingles => {
+//      shingles.map(shingle => {
+//        allShingles
+//      })
+//    })
+//
+//    cMatrix
 //  }
 
 
@@ -27,7 +41,7 @@ object Shingling extends Pipeline[RDD[String], RDD[Set[Int]]]{
     * @param k
     * @return
     */
-  def shingleSet(text: String, k: Int): Set[Int] = {
+  def shingleSet(text: String, k: Int): Set[Long] = {
     text.zipWithIndex.map {
       case (c, i) => hashShingle(kShingle(text, k, i))
     } toSet
@@ -44,7 +58,7 @@ object Shingling extends Pipeline[RDD[String], RDD[Set[Int]]]{
     text.substring(index, Math.min(index+k, text.length))
   }
 
-  def hashShingle(shingle: String): Int = {
+  def hashShingle(shingle: String): Long = {
     shingle.hashCode
   }
 
