@@ -2,46 +2,34 @@ package similarity
 
 import org.apache.spark.rdd.RDD
 import utils._
+
 /**
   * Created by Jacob on 07-Nov-16.
   */
-object Shingling extends Pipeline[RDD[String], RDD[Set[Long]]]{
-  /**
-    * Takes an RDD of that that contains every document as as a string.
-    * Converts every document to a set of hashed shingles.
-    * @param ctx
-    * @param posts
-    * @return
-    */
-  def run(ctx: Context)(posts: RDD[String]): RDD[Set[Long]]={
+object Shingling extends Pipeline[RDD[String], (RDD[Set[Int]], Map[Int, Int])] {
+
+  def run(ctx: Context)(posts: RDD[String]): (RDD[Set[Int]], Map[Int, Int]) = {
     val shingleSize = ctx.shingleSize
-    val hashes: RDD[Set[Long]] = posts.map(post => shingleSet(post, shingleSize))
-    hashes
+    val hashes: RDD[Set[Int]] = posts.map(post => shingleSet(post, shingleSize))
+    val map = shingleRowMap(hashes)
+    (hashes, map)
   }
 
-//
-//  def shingleDocument(documents: RDD[String]): RDD[Set[Long]] = {
-//    //Compute every shingle hash
-//    val shingles = documents.map(text => shingleSet(text, 9))
-//    val allShingles = shingles.reduce(_ union _).flatten
-//
-//    val cMatrix = shingles.map(shingles => {
-//      shingles.map(shingle => {
-//        allShingles
-//      })
-//    })
-//
-//    cMatrix
-//  }
+  def shingleRowMap(hashedShingles: RDD[Set[Int]]): Map[Int, Int] = {
+    val allShingles = hashedShingles.reduce(_ union _)
+    allShingles.zipWithIndex.toMap[Int, Int]
+  }
+
 
 
   /**
     * Converts a string to a set of shingles of length k
+    *
     * @param text
     * @param k
     * @return
     */
-  def shingleSet(text: String, k: Int): Set[Long] = {
+  def shingleSet(text: String, k: Int): Set[Int] = {
     text.zipWithIndex.map {
       case (c, i) => hashShingle(kShingle(text, k, i))
     } toSet
@@ -49,16 +37,17 @@ object Shingling extends Pipeline[RDD[String], RDD[Set[Long]]]{
 
   /**
     * Generates a shingle of length k from i to k for a given string
+    *
     * @param text
     * @param k
     * @param index
     * @return
     */
   def kShingle(text: String, k: Int, index: Int): String = {
-    text.substring(index, Math.min(index+k, text.length))
+    text.substring(index, Math.min(index + k, text.length))
   }
 
-  def hashShingle(shingle: String): Long = {
+  def hashShingle(shingle: String): Int = {
     shingle.hashCode
   }
 
