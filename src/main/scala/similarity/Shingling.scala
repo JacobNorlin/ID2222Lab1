@@ -3,6 +3,8 @@ package similarity
 import org.apache.spark.rdd.RDD
 import utils._
 
+import scala.collection.immutable.IntMap
+
 /**
   * Created by Jacob on 07-Nov-16.
   */
@@ -12,8 +14,10 @@ object Shingling extends Pipeline[RDD[String], (RDD[Set[Int]], Map[Int, Int])] {
     val shingleSize = ctx.shingleSize
     val hashes: RDD[Set[Int]] = posts.map(post => shingleSet(post, shingleSize))
     val map = shingleRowMap(hashes)
+    println("Shingling done")
     (hashes, map)
   }
+
 
   def shingleRowMap(hashedShingles: RDD[Set[Int]]): Map[Int, Int] = {
     val allShingles = hashedShingles.reduce(_ union _)

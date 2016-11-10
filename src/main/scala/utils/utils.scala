@@ -21,5 +21,6 @@ abstract class Pipeline[-F, +T] {
 
 case class Context(
                     val sc: SparkContext,
-                    val shingleSize: Int
+                    val shingleSize: Int,
+                    val numHashFunctions: Int
                   )
