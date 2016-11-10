@@ -18,13 +18,15 @@ object Shingling extends Pipeline[RDD[String], (RDD[Set[Int]], Map[Int, Int])] {
     (hashes, map)
   }
 
-
+  /**
+    * Generates a map of the form (shingle -> rownumber)
+    * @param hashedShingles
+    * @return
+    */
   def shingleRowMap(hashedShingles: RDD[Set[Int]]): Map[Int, Int] = {
     val allShingles = hashedShingles.reduce(_ union _)
     allShingles.zipWithIndex.toMap[Int, Int]
   }
-
-
 
   /**
     * Converts a string to a set of shingles of length k
